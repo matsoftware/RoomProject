@@ -1,0 +1,95 @@
+%Letti - by Mattia Campolese
+
+ LICENZA:
+ ----------------------------------------------------------------
+ Copyright (C) 2005 - Mattia Campolese
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ -----------------------------------------------------------------
+
+ Consulta il file 'Leggimi.rtf' allegato con questo script per ulteriori
+ informazioni.
+
+ ----------------------------------------------------------------%
+
+%materassi%
+Def materasso = (convexhull ~ s1):(ukpol:(angoli struct lati)) * q:20
+ where angoli = (struct ~ [t:<1,2>:<7.8,1> ~ id, t:2:1 ~ r:<1,2>:(pi/2), 
+       t:1:7.8 ~ r:<1,2>:(3*pi/2), r:<1,2>:pi] ~ s:<1,2>:<0.5,0.5>):(ArcCirc:20:(pi/2)) color yellow,
+       lati = struct:<q:7.8, q:7.8, q:1, q:1>
+ end;
+Def materasso1 = @2:materasso texture mater1_texture;
+Def materasso2 = @2:materasso texture mater2_texture;
+
+%sostegni%
+Def sostegno1 = struct:<t:3:3.325:rete, t:<1,2>:<-3,0.5>:piedini>
+ Where
+  rete = struct:<archi, (t:2:1 ~ r:<1,3>:(pi/2)):cilindri_grandi,
+             (t:1:1 ~ r:<2,3>:(pi/2)):cilindri_piccoli, (t:2:-6.4 ~ r:<1,2>:(3*pi/2)):archi,
+             (t:2:-7.4 ~ r:<1,3>:(pi/2)):cilindri_grandi, (t:1:-17.6 ~ r:<1,2>:(pi/2)):archi,
+             (t:1:-18.6 ~ r:<2,3>:(pi/2)):cilindri_piccoli,(t:<1,2>:<-17.6,-6.4> ~ r:<1,2>:pi):archi>
+   Where
+    archi = Arctorus:<0.225,1,pi/2>:<20,20>,
+    cilindri_grandi = mat_cyl:<0.225,17.6>:20,
+    cilindri_piccoli = mat_cyl:<0.225,6.4>:20
+   End, 
+  piedini = struct:<piede, t:1:-12:piede, t:2:-7.4:piede, t:<1,2>:<-12,-7.4>:piede>
+   Where piede = insr:top:<mat_cyl:<0.26,0.03>:20 Acolor rgbacolor:<0.24,0.24,0.24,0.24>,
+                 mat_cyl:<0.25,3.07>:20, cuboid:<0.6,0.6,0.1>> End
+ End;
+
+Def sostegno2 = struct:<t:3:3.1:rete Acolor rgbacolor:<0.24,0.24,0.24,0.24>, piedini>
+ Where
+ rete = struct:<angoli,(t:2:0.6 ~ r:<1,2>:(pi/2)):(assi:17.6),
+        t:<1,2>:<0.6,-6.4>:(assi:6.4), (t:2:-6.4 ~ r:<1,2>:(3*pi/2)):angoli,
+        (t:2:-7.4 ~ r:<1,2>:(pi/2)):(assi:17.6),(t:<1,2>:<-17.6,-6.4> ~ r:<1,2>:pi):angoli,
+        t:<1,2>:<-18.6,-6.4>:(assi:6.4),(t:<1,2>:<-17.6,0> ~ r:<1,2>:(pi/2)):angoli>
+   Where
+   assi(h::IsReal) = cuboid:<0.4,h,0.5>,
+   angoli = ArcTube:<0.6,1,0.5>
+    Where ArcTube(r1,r2,h::IsRealPos) = 
+     (Map:[s2 * cos ~ S1, s2 * sin ~ S1]:domain) * q:h
+       Where
+        domain = T:2:r1:(Intervals:(pi/2):20 * Intervals:(r2 - r1):1)
+       End
+    end
+   End, 
+ piedini = struct:<(r:<1,2>:(-1*pi/4)):piede, (t:1:-17.6 ~ r:<1,2>:(pi/4)):piede,
+       (t:2:-6.4 ~ r:<1,2>:(-3*pi/4)):piede, (t:<1,2>:<-17.6,-6.4> ~ r:<1,2>:(3*pi/4)):piede>
+   Where piede = insl:top:< mat_cyl:<0.3,0.03>:20, mat_cyl:<0.25,3.07>:20, appoggio> Acolor rgbacolor:<0.24,0.24,0.24,0.24> 
+      Where appoggio = (mkpol:< <<0,0>, <2.7,0>, <1.8,0.9>, <0.9,0.9>>, <1..4>, <<1>>>) * q:0.03 end 
+     End     
+ End;
+
+%corpo letti%
+Def corpo_letto1 = struct:<sostegno1, 
+		   (t:<1,2,3>:<1.2,0.7,4> ~ r:<2,3>:(pi/2) ~ r:<1,3>:(pi/2)):materasso1>;
+Def corpo_letto2 = struct:<sostegno2, 
+		   (t:<1,2,3>:<1.2,0.7,4> ~ r:<2,3>:(pi/2) ~ r:<1,3>:(pi/2)):materasso2>;
+
+
+%testata%
+Def testata = (testata2d * q:0.2) texture test_texture
+ Where
+   testata2d = MKPOL:<verts, cells, pols> 
+    WHERE
+     verts = < <0,0>,<8.8,0>,<8.8,8>,<4.7,9>,<4.1,9>,<0,8>>,
+     cells = < 1..6 >,
+     pols = < <1> >
+    END
+ End;
+
+Def letto1 = struct:<corpo_letto1, (t:<1,2>:<1.2,-7.6> ~ r:<1,2>:(pi/2) ~ r:<2,3>:(pi/2)):testata>;
+Def letto2 = struct:<corpo_letto2, (t:<1,2>:<1.2,-7.6> ~ r:<1,2>:(pi/2) ~ r:<2,3>:(pi/2)):testata>;

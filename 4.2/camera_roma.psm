@@ -1,0 +1,79 @@
+%----------------------------------------------------------------
+ CAMERA ROMA, una camera open-source
+   by Mattia Campolese, Marzo 2005 - Aprile 2005  
+
+ LICENZA:
+ ----------------------------------------------------------------
+ Copyright (C) 2005 - Mattia Campolese
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ -----------------------------------------------------------------
+
+ Consulta il file 'Leggimi.rtf' allegato con questo script per ulteriori
+ informazioni.
+
+ ----------------------------------------------------------------%
+
+%1. Caricamento oggetti%
+
+%definire path in base alla directory di questo file%
+Def path = 'D:/RoomProject/4.2/';
+load: (string:<path,'script/oggetti.psm'>);
+
+%2. Definizione elementi di struttura%
+Def battiscopa(lunghezza::IsSeqOf:IsReal)(texsiz::IsRealPos) = (q:lunghezza * cuboid:<1,0.1>) texture bat:texsiz;
+Def pavimento = cuboid:<49.6,38.7,0.01> texture pav;
+Def finestra = struct:<@1:(cuboid:<15.1,24,2.1>), t:<1,2,3>:<1.5,12,0.65>:(solidifier:'finestra')>;
+
+Def muro1 = struct:<(struttura * q:0.01) color white, battiscopa:<0.85,-9.9,27.95>:0.15>
+ where struttura = MkPol:< <<0,0>,<0.85,0>,<0.85,21.8>,<10.75,21.8>,<10.75,0>,<38.7,0>,<38.7,30>,<0,30>>,
+       <<1,2,3,8>,<3,4,7,8>,<4,5,6,7>>, <<1,2,3>> > end;
+Def muro2 = struct:<cuboid:<30,49.6,0.01> color white, (t:<1,3>:<1,-0.1> ~ r:<1,2>:(pi/2)):(battiscopa:<49.6>:0.0625)>;
+Def muro3 = struct:<(struttura * q:0.01) color white, t:<1,3>:<8.9,-2.1>:finestra, battiscopa:<8.9,-15.1,14.7>:0.22>
+ where struttura = MkPol:< <<0,0>,<8.9,0>,<8.9,24>,<24,24>,<24,0>,<38.7,0>,<38.7,30>,<0,30>>,
+       <<1,2,3,8>,<3,4,7,8>,<4,5,6,7>>, <<1,2,3>> > end;
+
+%3. Definizione componenti struttura%
+Def myfloor = struct:<t:3:-0.01:pavimento,
+    %zona studio - lavoro%
+     t:<1,2>:<36.6,31.8>:scrivania_mattia, (t:<1,2>:<6.6,17> ~ r:<1,2>:(pi/2)):portacomputer, t:<1,2>:<0.6,23.2>:(scrivania_flavio),
+    (t:<1,2>:<7.4,14.2> ~ r:<1,2>:(pi/2)):scaffale_mattia, (t:<1,2>:<7.4,35.7> ~ r:<1,2>:(pi/2)):scaffale_flavio,
+    %arredo%   
+     t:<1,2>:<12.5,0.15>:armadio,
+     t:<1,2>:<22.3,32.9>:comodino_mattia, t:<1,2>:<8.5,34.8>:comodino_flavio,
+    (t:<1,2>:<27.7,37> ~ r:<1,2>:(pi/2)):letto1,(t:<1,2>:<14.5,37> ~ r:<1,2>:(pi/2)):letto2,
+    %oggetti vari%    
+    (t:<1,2>:<44,4> ~ r:<1,2>:(pi/20)):scatolone1, t:<1,2>:<44.8,1.1>:scatolone2, 
+     t:<1,2>:<48,8.5>:portadisegni>;
+
+Def wall1 = struct:<muro1, t:1:1.54:entrata, t:<1,2,3>:<11,11,0.1>:interruttore,
+    t:<1,2,3>:<11,2.9,0.1>:presa, t:<1,2,3>:<25.41,13.7,0.1>:calendario_flavio>;
+Def wall2 = struct:<muro2,(t:<1,2,3>:<16,14,-0.01> ~ r:<1,2>:(pi/2) ~ r:<2,3>:pi):poster_flavio>;
+Def wall3 = struct:<muro3, 
+    (t:<1,2,3>:<3.5,12.5,0.1>):calendario_mattia, 
+     t:<1,2,3>:<26.7,11,0.1>:interruttore, t:<1,2,3>:<26.7,2.9,0.1>:presa,
+    (t:<1,2,3>:<0.1,7.6,0.01>):logo_mattia,
+    (t:<1,2,3>:<31,10,0.4> ~ r:<1,2>:(3*pi/2)):termosifone>;
+Def soffitto = @1:(cuboid:<49.6,38.7,0.01>);
+%opzionale, per alcune visualizzazioni - Def soffitto = cuboid:<49.6,38.7,0.01> color white;%
+
+%4. Definizione camera finale%
+Def camera_roma = struct:<myfloor, t:3:30:soffitto, (t:2:0.1 ~ r:<2,3>:(pi/2)):(battiscopa:<49.6>:0.0625),
+    (r:<1,2>:(pi/2) ~ r:<2,3>:(pi/2)):wall1, 
+    (t:2:38.7 ~ r:<1,2>:(3*pi/2) ~ r:<1,3>:(pi/2)):wall2, 
+    (t:<1,2>:<49.6,38.7> ~ r:<1,2>:(3*pi/2) ~ r:<2,3>:(pi/2)):wall3>;
+
+%5. Esportazione camera%
+VRML: camera_roma: (string:<path, 'camera_roma.wrl'>);

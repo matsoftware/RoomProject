@@ -1,0 +1,215 @@
+(eval-plasm "
+%Generatore di oggetti - by Mattia Campolese
+
+ LICENZA:
+ ----------------------------------------------------------------
+ Copyright (C) 2005 - Mattia Campolese
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ -----------------------------------------------------------------
+
+ Consulta il file 'Leggimi.rtf' allegato con questo script per ulteriori
+ informazioni.
+
+ ----------------------------------------------------------------%
+
+%Caricamento script - path definito da script principale%
+load: (string:<path,'script/textures.psm'>);
+load: (string:<path,'script/scrivanie_casa.psm'>);
+load: (string:<path,'script/scaffale_casa.psm'>);
+load: (string:<path,'script/comodini_casa.psm'>);
+load: (string:<path,'script/letti_casa.psm'>);
+
+%-----------------------------------%
+%Definizione funzioni personalizzate%
+%-----------------------------------%
+
+%cilindro ottimizzato%
+Def mat_cyl(r,h::IsRealPos)(n::IsIntPos) = (convexhull ~ s1 ~ ukpol):(circumference:r:n) * q:h;
+%arco di toroide%
+Def Arctorus (r1,R2,dom::IsReal)(n,m::IsIntPos) = MAP:(torusmap:<r1,R2>):(Intervals:(2*pi):n * Intervals:(dom):m);
+%arco di circonferenza arbitrario%
+Def ArcCirc (n::IsIntPos)(dom::IsRealPos) = MAP:([Cos, Sin] ~ s1):(intervals:dom:n);
+
+%---------------------------------------------%
+%Definizione generatori oggetti personalizzati%
+%---------------------------------------------%
+
+%generatore di libri con texture%
+Def libro (larghezza,lunghezza,altezza::IsNum)(tlato,tfronte,tretro::IsString) = 
+    struct:<copertina,pagine> 
+ Where
+  txt1 =  Simpletexture: tlato,
+  txt2 =  Simpletexture: tfronte,
+  txt3 =  SimpleTexture: tretro,
+  copertina = struct:<lato,fronte, retro>
+   Where
+    lato = cuboid:<0.005,lunghezza,altezza> texture txt1,
+    fronte = t:3:(altezza):(cuboid:<larghezza,lunghezza,0.005>) texture txt2,
+    retro = cuboid:<larghezza,lunghezza,0.005> texture txt3
+   End,
+  pagine = t:<1,2,3>:<0.005,0.005,0.005>:
+  (cuboid:<-:<larghezza,0.01>, -:<lunghezza,0.01>, -:<altezza,0.005>>) 
+   Acolor rgbacolor:<1,1,0.75,0.9>
+ End;
+%generatore di dispense universitarie con texture e colori%
+Def dispensa(rad,lar,lun::IsRealPos)(tx1::IsString;col1,col2::IsFun) = 
+ struct:<r:<2,3>:(3*pi/2):rilegatura, t:3:((c:+:-0.01 ~ c:*:-0.5 ~ -):<rad,0.02>):copertinainf, 
+ t:3:((c:*:-0.5 ~ -):<rad,0.019>):fogli, t:3:((c:+:-0.01 ~ c:*:0.5):rad):copertinasup>
+  Where
+   tex1 = SimpleTexture: tx1,
+   rilegatura = mat_cyl:<(rad / 2),lun>:30 Acolor col2,
+   copertinainf = cuboid:<lar,lun,0.01> Acolor col1,
+   copertinasup = cuboid:<lar,lun,0.01> texture tex1,
+   fogli = cuboid:<lar,lun,-:<rad,0.01>> color white
+  End;
+
+%--------------------------------%
+%- oggetti di grande dimensione -%
+%--------------------------------%
+
+%armadio%
+Def armadio = struct:<@1:(cuboid:<30.6,6,29>), 
+    (t:<1,2,3>:<20,3.5,14> ~ r:<1,2>:pi ~ r:<2,3>:(pi/2)):(solidifier:'armadio')>;
+
+%termosifone%
+Def termosifone = struct:<@1:(cuboid:<8.6,6.3,1>), 
+   (t:<1,2,3>:<4.3,0.7,0.3> ~ r:<1,2>:(pi/2) ~ s:<1,2,3>:<0.3,0.3,0.3>):(solidifier:'termosifone')>;
+
+%porta%
+Def entrata = struct:<t:3:-0.15:pannelli, r:<1,3>:(pi/3):porta>
+ Where
+  pannelli = struct:<t:1:-0.7:(cuboid:<0.7,21.8,0.1>), t:2:21.1:(cuboid:<8.5,0.7,0.1>), 
+  t:1:8.5:(cuboid:<0.7,21.8,0.1>)> Acolor darkblack,
+  porta = struct:<t:<1,3>:<0.05,-0.15>:(cuboid:<8.5,21.1,0.3>) Acolor darkblack, t:2:2:cardine, 
+  t:2:10.5:cardine, t:2:18.5:cardine, (t:<1,2,3>:<8.1,10,-0.25> ~ r:<1,2>:(3*pi/2) ~ r:<1,3>:(pi/2)):maniglia>
+   where 
+    cardine = r:<2,3>:(pi/2):(mat_cyl:<0.05,0.5>:20) Acolor ottone,
+    maniglia = struct:<t:1:0.4:(base Acolor ottone),(t:<1,3>:<1,1.75> ~  r:<1,3>:(3*pi/2) ~ r:<2,3>:(pi/2)):pomello,
+    base Acolor ottone, t:<1,3>:<-0.0015,0.3>:serratura, (t:<1,3>:<-0.5,1.75> ~ r:<2,3>:(pi/2) ~ r:<1,2>:(pi/2)):pomello>
+     where
+      base = (c:*:(q:0.1) ~ ConvexHull ~ s1  ~ UkPol):(struct:
+      <(t:2:2.4 ~ s:<1,2>:<0.25,0.25>):(ArcCirc:20:pi),
+      (t:1:-0.25 ~ r:<1,2>:(pi/2)):(q:2.4),(t:1:0.25 ~ r:<1,2>:(pi/2)):(q:2.4),
+      (r:<1,2>:pi ~ s:<1,2>:<0.25,0.25>):(ArcCirc:20:pi)>),
+      pomello = struct:<t:<2,3>:<-0.2,-0.2>:lev1, r:<2,3>:(pi/2):lev2>
+       where
+        lev1 = mat_cyl:<0.1,1.4>:20 Acolor lightblack,
+        lev2 = mat_cyl:<0.15,0.55>:20 Acolor ottone
+       End,
+      serratura = s:<1,2,3>:<5.1,0.2,0.1>:base Acolor lightblack
+     end
+   end
+ End;
+
+%portacomputer - Flavio%
+Def portacomputer = struct:<t:3:7:piano, t:<1,2,3>:<0.175,0.3,6.2>:tastiera, 
+                    t:<1,2>:<0.1,0.15>:sostegno, t:<1,2>:<5.75,0.15>:sostegno, 
+                    t:<1,2,3>:<0.15,5.5,4.6>:retro>
+ Where
+  piano = @2:(cuboid:<6,6,0.175>) texture test_texture,
+  tastiera = @2:(cuboid:<5.65,5.3,0.175>) texture test_texture,
+  sostegno = @2:(cuboid:<0.175,5.85,7>) texture test_texture,
+  retro = @2:(cuboid:<5.65,0.175,2.4>) texture test_texture
+ End;
+
+%---------------------------------%
+%- oggetti di piccola dimensione -%
+%---------------------------------%
+
+%Tubo portadisegni - Mattia%
+Def portadisegni = struct:<base, t:3:6.9:cerniera, t:3:7:apertura> Acolor lightblack
+ Where
+  base = mat_cyl:<0.5,6.9>:40,
+  cerniera = mat_cyl:<0.51,0.1>:17,
+  apertura = tube:<0.47,0.5,0.5>:40
+ End;
+
+%scatoloni%
+Def scatolone1 = struct:<cuboid:<4,2.5,0.05>, t:2:0.05:(cuboid:<0.05,2.5,3>), cuboid:<4,0.05,3>,
+    t:1:4:(cuboid:<0.05,2.5,3>), t:<1,2>:<0.05,2.5>:(cuboid:<4,0.05,3>)> Acolor mybrown;
+Def scatolone2 = struct:<cuboid:<2.5,2.5,0.05>, t:2:0.05:(cuboid:<0.05,2.5,3.4>), cuboid:<2.5,0.05,3.4>,
+    t:1:2.5:(cuboid:<0.05,2.5,3.4>), t:<1,2>:<0.05,2.5>:(cuboid:<2.5,0.05,3.4>)> Acolor mybrown;
+
+%libri - Mattia%
+Def calcolo2 = libro:<2.1,2.65,0.2>:calcolo2_tex;
+Def meccanica = libro:<1.95,2.6,0.13>:meccanica_tex;
+Def informatica = libro:<1.68,2.4,0.25>:informatica_tex;
+Def calcolo1 = libro:<1.7,2.4,0.4>:calcolo1_tex;
+Def geometria = libro:<1.7,2.4,0.08>:geometria_tex;
+Def geometriaex = libro:<1.7,2.4,0.17>:geometriaex_tex;
+Def ilprincipe = libro:<1.35,2.2,0.2>:ilprincipe_tex;
+Def deminam = libro:<1.3,2,0.5>:deminam_tex;
+%libri - Flavio%
+Def fondaer = libro:<1.7,2.4,0.25>:fondaer_tex;
+Def fondelast = libro:<1.7,2.4,0.1>:fondelast_tex;
+
+%dispense - Mattia%
+Def prindgest = dispensa:<0.15,2.1,3>:prindgest_tex;
+Def elemdtopog = dispensa:<0.13,2.1,3>:elemdtopog_tex;
+%dispense - Flavio%
+Def eleminfdisp = dispensa:<0.2,2.1,3>:eleminfdisp_tex;
+
+%raccoglitori%
+Def raccoglitore(colore::IsFun) = struct:<copertina, t:<1,2,3>:<0.4,0.025,0.02>:fogli>
+ Where
+  copertina = struct:<(t:<1,3>:<0.01,0.18> ~ r:<1,3>:(pi/40)):(cuboid:<2.72,3.15,0.02>),
+  t:1:0.01:(cuboid:<2.7,3.15,0.02>), t:1:2.7:(cuboid:<0.02,3.15,0.4>)> Acolor colore,
+  fogli = cuboid:<2.3,3.1,0.18> color white
+ End;
+
+%calendario Mattia%
+Def calendario_mattia = cuboid:<2.5,5.1,0.1> texture calmat;
+
+%logo Mattia%
+Def logo_mattia = cuboid:<2.79,1.8,0.01> texture logomat;
+
+%calendario Flavio%
+Def calendario_flavio = cuboid:<3.3,6.5,0.1> texture calfla;
+
+%poster Flavio%
+Def poster_flavio = cuboid:<9.7,6.8,0.01> texture juventus;
+
+%lampada Flavio%
+Def lampada_flavio = struct:<@2:(tube:<0.64,0.65,3.1>:20) texture lampada, 
+    mat_cyl:<0.66,0.25>:25 color gray>;
+
+%interruttore%
+Def interruttore = struct:<placca, t:<1,2,3>:<0.49,0.2,0.05>:leva>
+ Where
+  placca = cuboid:<1.15,0.7,0.05> Acolor darkblack,
+  leva = cuboid:<0.17,0.3,0.02> color white
+ End;
+
+%presa%
+Def presa = struct:<placca, t:<1,2,3>:<0.49,0.2,0.05>:attacco>
+ Where
+  placca = cuboid:<1.15,0.7,0.05> Acolor darkblack,
+  attacco = struct:<cuboid:<0.17,0.3,0.02> color white, t:<1,2,3>:<0.085,0.03,0.02>:buchi>
+   where buchi = struct:<t:2:0.04:(mat_cyl:<0.02,0.001>:15), 
+   t:2:0.12:(mat_cyl:<0.02,0.001>:15), t:2:0.2:(mat_cyl:<0.02,0.001>:15)> Acolor darkblack
+   end
+ End;
+
+%penna%
+Def penna = (r:<1,3>:(pi/2) ~ insr:top):<tappo,corpo,gomma,punta>
+ Where
+  tappo = mat_cyl:<0.04,0.05>:6 Acolor lightblack,
+  corpo = mat_cyl:<0.04,0.95>:6 color white,
+  gomma = mat_cyl:<0.04,0.3>:20 Acolor lightblack,
+  punta = cone:<0.04,0.17>:20
+ End;
+
+")

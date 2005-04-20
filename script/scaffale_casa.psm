@@ -1,0 +1,51 @@
+(eval-plasm "
+%Scaffali - by Mattia Campolese
+
+ LICENZA:
+ ----------------------------------------------------------------
+ Copyright (C) 2005 - Mattia Campolese
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ -----------------------------------------------------------------
+
+ Consulta il file 'Leggimi.rtf' allegato con questo script per ulteriori
+ informazioni.
+
+ ----------------------------------------------------------------%
+
+%scaffale%
+Def scaffale = insr:top:<base, ripiano, ripiani> Acolor lightblack
+ Where
+  base = struct:<supporto, t:1:2.3:supporto, t:<1,2>:<2.3,6.8>:supporto, t:2:6.8:supporto>,
+  supporto = struct:<cone:<0.5,0.5>:20, mat_cyl:<0.25,0.7>:25>,
+  paletto = mat_cyl:<0.25,4>:25,
+  paletti = struct:<paletto, t:1:2.3:paletto, t:<1,2>:<2.3,6.8>:paletto, t:2:6.8:paletto>,
+  ripiano = (cuboid:<3,7.5,0.5> - (t:<1,2,3>:<0.1,0.1,-0.05>:(cuboid:<2.8,7.3,0.3>))),
+  piano = struct:<t:<1,2,3>:<0.35,0.35,-3.6>:paletti, ripiano>,
+  ripiani = insr:top:(#:3:piano)
+ End;
+
+Def scaffale_Mattia = struct:<scaffale, 
+    %libri% 
+    t:<2,3>:<1,9.4>:geometria, t:<1,2,3>:<0.015,1,9.48>:geometriaex,
+    (t:<1,2,3>:<0.05,3.4,10.05> ~ r:<2,3>:pi):calcolo1,
+     %dispense%
+    (r:<1,2>:(pi/2) ~ t:<1,2,3>:<1,-2.5,5.375>):prindgest, t:<2,3>:<3.5,5.36>:elemdtopog>;
+Def scaffale_Flavio = struct:<scaffale, 
+    %libro%    
+    t:<2,3>:<1,5.3>:fondaer, 
+    %raccoglitore%
+    t:<1,2,3>:<-0.5,0.9,9.4>:(raccoglitore:darkblue), t:<1,2,3>:<-0.5,1.5,1.2>:(raccoglitore:darkgreen)>;
+")

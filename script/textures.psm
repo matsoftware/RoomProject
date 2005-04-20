@@ -1,0 +1,72 @@
+(eval-plasm "
+%Textures oggetti e colori - by Mattia Campolese
+
+ LICENZA:
+ ----------------------------------------------------------------
+ Copyright (C) 2005 - Mattia Campolese
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ -----------------------------------------------------------------
+
+ Consulta il file 'Leggimi.rtf' allegato con questo script per ulteriori
+ informazioni.
+
+ ----------------------------------------------------------------%
+
+%colori%
+Def lightblack = rgbacolor:<0.24,0.24,0.24,0.24>;
+Def darkblack = rgbacolor:<0.1,0.1,0.1,0.1>;
+Def ottone = rgbacolor:<0.88,0.68,0.06,0>;
+Def mybrown = rgbacolor:<0.7,0.42,0.02,0>;
+Def rosso = rgbacolor:<0.7,0,0,0.5>;
+Def darkblue = rgbacolor:<0,0,0.4,0.5>;
+Def darkgreen = rgbacolor:<0,0.4,0.4,0.5>;
+Def bianco = rgbacolor:<1,1,1,1>;
+Def giallo = rgbacolor:<1,0.63,0.2,0.5>;
+
+%oggetti%
+Def calmat = SimpleTexture: 'textures/calendario_mattia.jpg';
+Def calfla = SimpleTexture: 'textures/calendario_flavio.jpg';
+Def logomat = SimpleTexture: 'textures/logo_mattia.jpg';
+Def juventus = SimpleTexture: 'textures/poster_flavio.jpg';
+Def lampada = FullTexture:<'textures/lampada.jpg',true,false,<1,1>,0,<1,1>,<0,0>>;
+
+%libri%
+Def calcolo2_tex = <'textures/calcolo2_lato.jpg','textures/calcolo2_fronte.jpg','textures/calcolo2_retro.jpg'>;
+Def meccanica_tex = <'textures/meccanica_lato.jpg','textures/meccanica_fronte.jpg','textures/meccanica_retro.jpg'>;
+Def informatica_tex = <'textures/informatica_lato.jpg','textures/informatica_fronte.jpg','textures/informatica_retro.jpg'>;
+Def calcolo1_tex = <'textures/calcolo1_lato.jpg','textures/calcolo1_fronte.jpg','textures/calcolo1_retro.jpg'>;
+Def geometria_tex = <'textures/geometria_lato.jpg','textures/geometria_fronte.jpg','textures/geometria_retro.jpg'>;
+Def geometriaex_tex = <'textures/geometriaex_lato.jpg','textures/geometriaex_fronte.jpg','textures/geometriaex_retro.jpg'>;
+Def ilprincipe_tex = <'textures/ilprincipe_lato.jpg','textures/ilprincipe_fronte.jpg','textures/ilprincipe_retro.jpg'>;
+Def deminam_tex = <'textures/deminam_lato.jpg','textures/deminam_fronte.jpg','textures/deminam_retro.jpg'>;
+Def fondaer_tex = <'textures/fondaer_lato.jpg','textures/fondaer_fronte.jpg','textures/fondaer_retro.jpg'>;
+Def fondelast_tex = <'textures/fondelast_lato.jpg','textures/fondelast_fronte.jpg','textures/fondelast_retro.jpg'>;
+
+%dispense%
+Def prindgest_tex = <'textures/prindgest.jpg',rosso,bianco>;
+Def elemdtopog_tex = <'textures/elemdtopog.jpg',darkblue,bianco>;
+Def eleminfdisp_tex = <'textures/eleminfdisp.jpg',darkblue,bianco>;
+
+%materiali%
+Def scriv_tex = FullTexture:<'textures/scrivania.jpg',true,true,<1.86,1.86>,pi/4,<0.1,0.186>,<0,0>>;
+Def mater1_texture = FullTexture:<'textures/trapunta1.jpg',true,true,<0.05,0.05>,pi/2,<0.05,0.05>,<0,0>>;
+Def mater2_texture = FullTexture:<'textures/trapunta2.jpg',true,true,<0.05,0.05>,pi/2,<0.05,0.05>,<0,0>>;
+Def test_texture = FullTexture:<'textures/legno.jpg',true,true,<0.2,0.2>,pi/2,<0.2,0.2>,<0,0>>;
+Def lightwood = FullTexture:<'textures/legno2.jpg',true,true,<1,1>,0,<0.1,0.1>,<0,0>>;
+Def bat(siz::IsRealPos) = FullTexture:<'textures/battiscopa.jpg',true,true,<3.3,1>,0,<siz,siz>,<0,0>>;
+Def pav = FullTexture:<'textures/pavimento.jpg',true,true,<1,1>,pi/4,<0.08,0.08>,<0,0>>;
+
+")

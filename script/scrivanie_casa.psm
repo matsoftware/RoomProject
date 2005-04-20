@@ -1,0 +1,77 @@
+(eval-plasm "
+%Scrivanie - by Mattia Campolese
+
+ LICENZA:
+ ----------------------------------------------------------------
+ Copyright (C) 2005 - Mattia Campolese
+
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ -----------------------------------------------------------------
+
+ Consulta il file 'Leggimi.rtf' allegato con questo script per ulteriori
+ informazioni.
+
+ ----------------------------------------------------------------%
+
+%SCRIVANIA - MATTIA%
+Def scrivania_mattia = struct:<(scriv_base top scriv_piano_lavoro), t:<1,2,3>:<2,2,7.75>:piano_lavoro>
+ Where
+ %piano di lavoro%
+  scriv_piano_lavoro = cuboid:<13,7,0.25> texture scriv_tex,
+  piano_lavoro = struct:<
+    %libri%
+    t:2:-2:calcolo2, (t:<1,2>:<7,1> ~ r:<1,2>:(pi/2)):meccanica, 
+    (t:<1,2>:<0.1,1.7> ~ r:<1,2>:(pi/3.5)):informatica,
+    %raccoglitori%
+    t:<1,2>:<7.5,-2>:(raccoglitore:darkgreen), (t:<1,2,3>:<10.2,-2,0.61> ~ r:<1,3>:pi):(raccoglitore:giallo),
+    %altro%
+    (r:<1,2>:(pi/5) ~ t:<1,2,3>:<2,-0.8,0.245>):penna>,
+  %scrivania di base%
+  scriv_base = struct:<t:3:0.3:struttura_appoggio, piedi>
+   Where
+   %piedini d'appoggio%
+    piedi = struct:<t:<1,2>:<0.125,0.125>:scriv_piede, t:<1,2>:<0.125,6.125>:scriv_piede, t:<1,2>:<12.075,0.125>:scriv_piede, t:<1,2>:<12.075,6.125>:scriv_piede>
+      Where scriv_piede = cone:<0.25,0.2>:20 struct mat_cyl:<0.05,0.3>:30 Acolor ottone end,
+   %struttura%
+    struttura_appoggio = struct:<scriv_appoggio, t:<1,3>:<7.95,2.75>:cassetto>
+     Where
+      scriv_appoggio = struct:<scriv_pilastri, t:<2>:<6>:scriv_pilastri, t:3:5.25:scriv_raccordo> Acolor lightblack
+       Where
+        scriv_pilastri = (cuboid:<12.2,0.25,7.2>  - t:1:0.25:(cuboid:<11.7,0.25,6.95>)),
+        scriv_raccordo = struct:<cuboid:<0.25,6,0.7>, t:2:6:(cuboid:<12.2,0.25,0.7>), t:1:11.95:(cuboid:<0.25,6,0.7>)>
+       End,
+     %cassetto%
+      cassetto = struct:<scriv_blocco, t:<1,2,3>:<0.15,-0.01,0.15>:scriv_cassetti>
+       Where
+        scriv_cassetti = struct:<t:<3>:<1.415>:scriv_elementi, cuboid:<3.7,0.02,2.85> texture scriv_tex>
+         where scriv_elementi = struct:<cuboid:<3.7,0.15,0.01> color black, t:<1,2,3>:<1.45,-0.15,0.7375>:(cuboid:<0.8,0.15,0.1>) color brown, 
+          t:<1,2,3>:<1.45,-0.15,-0.7375>:(cuboid:<0.8,0.15,0.1>) color brown> end,
+        scriv_blocco = (@2 ~ cuboid):<4,6,3.15> texture scriv_tex
+       End
+     End
+   End
+ End;
+
+%SCRIVANIA - FLAVIO%
+Def scrivania_flavio = struct:<t:3:7.4:appoggio, sostegno, t:2:9.8:sostegno, 
+    t:<2,3>:<0.2,4.4>:retro, t:<1,2,3>:<2,2,7.6>:piano_lavoro>
+ Where
+  appoggio = @2:(cuboid:<5,10,0.2>) texture lightwood,
+  sostegno = @2:(cuboid:<5,0.2,7.4>) texture lightwood,
+  retro = @2:(cuboid:<0.2,9.6,3>) texture lightwood,
+  piano_lavoro = struct:<(t:<1,2>:<1,0.5> ~ r:<1,2>:(pi/3.5)):fondelast, t:<2,3>:<3.5,0.1>:eleminfdisp>
+ End;
+
+")
